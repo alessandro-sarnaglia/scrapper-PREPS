@@ -1,0 +1,41 @@
+name: Coleta Diária PREPS
+
+on:
+  schedule:
+    # 23:50 no Horário de Brasília (UTC-3) corresponde a 02:50 UTC do dia seguinte
+    - cron: '50 2 * * *'
+  workflow_dispatch: # Permite disparar o script manualmente clicando em "Run workflow"
+
+jobs:
+  executar_coleta:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+
+      - name: Instalar dependências R
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::httr2
+            any::rvest
+            any::dplyr
+            any::readr
+            any::stringr
+
+      - name: Executar script de extração
+        run: Rscript scrapper.R
+
+      - name: Commit e Push dos dados coletados
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add dados/
+          git commit -m "auto: coleta diária PREPS - $(date +'%Y-%m-%d') [skip ci]" || exit 0
+          git push
