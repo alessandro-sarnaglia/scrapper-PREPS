@@ -1,9 +1,6 @@
 name: Coleta Diária PREPS
 
 on:
-  schedule:
-    # 23:50 no Horário de Brasília (UTC-3) corresponde a 02:50 UTC do dia seguinte
-    - cron: '50 2 * * *'
   workflow_dispatch: # Permite disparar o script manualmente clicando em "Run workflow"
 
 jobs:
